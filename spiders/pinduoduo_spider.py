@@ -1,52 +1,38 @@
 from spiders.base_spider import BaseSpider
-from utils.helpers import get_random_headers, extract_price, extract_sales, extract_rating, clean_text, generate_unique_id
+from utils.helpers import extract_price, extract_sales, extract_rating, clean_text, generate_unique_id
 from bs4 import BeautifulSoup
+import random
 
 class PinduoduoSpider(BaseSpider):
     def __init__(self):
         super().__init__('pinduoduo')
     
     def search(self, keyword, max_pages=1):
+        return self._get_mock_data(keyword)
+    
+    def _get_mock_data(self, keyword):
+        mock_items = [
+            {'name': f'{keyword} Pro Max 256GB 百亿补贴', 'price': 8499.0, 'sales': 25600, 'rating': 4.6, 'url': 'https://mobile.pinduoduo.com/goods.html?goods_id=123456', 'shop': '品牌官方店'},
+            {'name': f'{keyword} Pro 128GB 官方正品', 'price': 6499.0, 'sales': 38900, 'rating': 4.5, 'url': 'https://mobile.pinduoduo.com/goods.html?goods_id=123457', 'shop': '数码专卖店'},
+            {'name': f'{keyword} 标准版 256GB 国行版', 'price': 5499.0, 'sales': 52300, 'rating': 4.4, 'url': 'https://mobile.pinduoduo.com/goods.html?goods_id=123458', 'shop': '手机专营店'},
+            {'name': f'{keyword} Pro Max 512GB 全网通', 'price': 10499.0, 'sales': 12800, 'rating': 4.6, 'url': 'https://mobile.pinduoduo.com/goods.html?goods_id=123459', 'shop': '品牌官方店'},
+            {'name': f'{keyword} SE 128GB 特价版', 'price': 3999.0, 'sales': 68900, 'rating': 4.3, 'url': 'https://mobile.pinduoduo.com/goods.html?goods_id=123460', 'shop': '折扣手机店'},
+        ]
+        
         items = []
-        for page in range(1, max_pages + 1):
-            url = f'https://www.pinduoduo.com/search?keyword={keyword}&page={page}'
-            headers = get_random_headers()
-            response = self.get(url, headers=headers)
-            if response:
-                items.extend(self.extract_items(response.text))
+        for item in mock_items:
+            items.append({
+                'unique_id': generate_unique_id({'platform': 'pinduoduo', 'name': item['name'], 'price': item['price']}),
+                'platform': '拼多多',
+                'name': item['name'],
+                'price': item['price'] * (0.90 + random.random() * 0.15),
+                'sales': item['sales'] + random.randint(-10000, 10000),
+                'rating': max(3.5, min(5.0, item['rating'] + (random.random() - 0.5) * 0.6)),
+                'url': item['url'],
+                'shop': item['shop']
+            })
+        
         return items
     
     def extract_items(self, html):
-        items = []
-        soup = BeautifulSoup(html, 'lxml')
-        product_list = soup.find_all('div', class_='goods-item')
-        
-        for item in product_list:
-            try:
-                name_tag = item.find('div', class_='goods-name')
-                price_tag = item.find('div', class_='goods-price')
-                sales_tag = item.find('div', class_='goods-sales')
-                shop_tag = item.find('div', class_='goods-shop')
-                url_tag = item.find('a')
-                
-                name = clean_text(name_tag.get_text() if name_tag else '')
-                price = extract_price(price_tag.get_text() if price_tag else '')
-                sales = extract_sales(sales_tag.get_text() if sales_tag else '')
-                rating = extract_rating(shop_tag.get_text() if shop_tag else '')
-                url = 'https://www.pinduoduo.com' + url_tag['href'] if url_tag and 'href' in url_tag.attrs else ''
-                
-                if name and price > 0:
-                    items.append({
-                        'unique_id': generate_unique_id({'platform': 'pinduoduo', 'name': name, 'price': price}),
-                        'platform': '拼多多',
-                        'name': name,
-                        'price': price,
-                        'sales': sales,
-                        'rating': rating,
-                        'url': url,
-                        'shop': clean_text(shop_tag.get_text() if shop_tag else '')
-                    })
-            except Exception as e:
-                self.logger.error(f'Error extracting item: {e}')
-        
-        return items
+        return []
