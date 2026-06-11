@@ -348,9 +348,27 @@
                 return;
             }
             
-            const stats = data.stats;
-            const items = data.items;
-            const recommendations = data.recommendations;
+            const stats = data.stats || {
+                total_items: 0,
+                avg_price: 0,
+                min_price: 0,
+                max_price: 0,
+                median_price: 0,
+                price_range: 0
+            };
+            const items = data.items || [];
+            const recommendations = data.recommendations || [];
+            
+            if (items.length === 0) {
+                document.getElementById('content').innerHTML = `
+                    <div class="results-section">
+                        <p style="color: #666; text-align: center; padding: 40px;">
+                            未采集到任何数据，请尝试其他关键词或查看示例数据
+                        </p>
+                    </div>
+                `;
+                return;
+            }
             
             let html = `
                 <div class="stats-card">

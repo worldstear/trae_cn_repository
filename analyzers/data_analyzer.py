@@ -47,7 +47,15 @@ class DataAnalyzer:
     
     def analyze_prices(self, items):
         if not items:
-            return {}
+            return {
+                'total_items': 0,
+                'avg_price': 0.0,
+                'min_price': 0.0,
+                'max_price': 0.0,
+                'median_price': 0.0,
+                'price_range': 0.0,
+                'platform_stats': {}
+            }
         
         df = pd.DataFrame(items)
         
