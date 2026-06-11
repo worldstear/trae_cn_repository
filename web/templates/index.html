@@ -405,7 +405,7 @@
                                 <span class="recommendation-badge">推荐</span>
                             </h3>
                             <div class="meta">销量: ${item.sales.toLocaleString()} | 店铺评分: ${item.rating}</div>
-                            <div class="meta"><a href="${item.url}" target="_blank" style="color: #3498db;">查看详情 →</a></div>
+                            <div class="meta"><a href="javascript:void(0);" onclick="openProductUrl('${item.url}')" style="color: #3498db;">查看详情 →</a></div>
                         </div>
                         <div class="product-price">
                             <div class="price">¥${item.price.toFixed(2)}</div>
@@ -432,7 +432,7 @@
                                 ${item.name}
                             </h3>
                             <div class="meta">销量: ${item.sales.toLocaleString()} | 店铺评分: ${item.rating}</div>
-                            <div class="meta"><a href="${item.url}" target="_blank" style="color: #3498db;">查看详情 →</a></div>
+                            <div class="meta"><a href="javascript:void(0);" onclick="openProductUrl('${item.url}')" style="color: #3498db;">查看详情 →</a></div>
                         </div>
                         <div class="product-price">
                             <div class="price">¥${item.price.toFixed(2)}</div>
@@ -445,6 +445,14 @@
             html += `</div></div>`;
             
             document.getElementById('content').innerHTML = html;
+        }
+
+        function openProductUrl(url) {
+            if (url && url !== '') {
+                window.open(url, '_blank');
+            } else {
+                alert('链接不可用');
+            }
         }
 
         function getPlatformClass(platform) {
